@@ -1,6 +1,6 @@
 PROJECT(nvimage)
 
-SET(IMAGE_SRCS	
+SET(IMAGE_SRCS
     nvimage.h
     BlockDXT.h BlockDXT.cpp
     ColorBlock.h ColorBlock.cpp
@@ -55,9 +55,3 @@ ELSE(NVIMAGE_SHARED)
 ENDIF(NVIMAGE_SHARED)
 
 TARGET_LINK_LIBRARIES(nvimage ${LIBS} nvcore posh bc6h bc7 nvmath)
-
-INSTALL(TARGETS nvimage
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib/static)
-

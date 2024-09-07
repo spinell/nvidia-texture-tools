@@ -40,25 +40,42 @@ IF (CUDA_FOUND)
     INCLUDE_DIRECTORIES(${CUDA_INCLUDE_DIRS})
 ENDIF (CUDA_FOUND)
 
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
-INCLUDE_DIRECTORIES(${NV_SOURCE_DIR}/extern/rg_etc1_v104)
-
 ADD_DEFINITIONS(-DNVTT_EXPORTS)
 #ADD_DEFINITIONS(-DHAVE_RGETC)
 #ADD_DEFINITIONS(-DHAVE_ETCPACK)
 
-IF(NVTT_SHARED)	
+IF(NVTT_SHARED)
     ADD_LIBRARY(nvtt SHARED ${NVTT_SRCS})
 ELSE(NVTT_SHARED)
     ADD_LIBRARY(nvtt ${NVTT_SRCS})
 ENDIF(NVTT_SHARED)
 
-TARGET_LINK_LIBRARIES(nvtt ${LIBS} nvcore nvimage nvthread nvsquish bc6h bc7 nvmath rg_etc1)
+TARGET_INCLUDE_DIRECTORIES(
+    nvtt
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+        $<BUILD_INTERFACE:${NV_SOURCE_DIR}/extern/rg_etc1_v104>
+        $<INSTALL_INTERFACE:include>
+)
 
-INSTALL(TARGETS nvtt 
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib/static)
+TARGET_LINK_LIBRARIES(
+    nvtt
+    PRIVATE
+        ${LIBS}
+        nvcore
+        nvimage
+        nvthread
+        nvsquish
+        bc6h
+        bc7
+        nvmath
+        rg_etc1
+)
+
+#INSTALL(TARGETS nvtt
+#    RUNTIME DESTINATION bin
+#    LIBRARY DESTINATION lib
+#    ARCHIVE DESTINATION lib/static)
 
 INSTALL(FILES nvtt.h nvtt_wrapper.h DESTINATION include/nvtt)
 

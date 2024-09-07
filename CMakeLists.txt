@@ -5,16 +5,6 @@ ENABLE_TESTING()
 SET(NV_CMAKE_DIR "${NV_SOURCE_DIR}/cmake")
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${NV_CMAKE_DIR}")
 
-# Compiler check (needs -std:c++11 flag)
-include(CheckCXXCompilerFlag)
-CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
-if(COMPILER_SUPPORTS_CXX11)
-    set(CMAKE_CXX_STANDARD 11)
-    set(CMAKE_CXX_STANDARD_REQUIRED ON)
-    set(CMAKE_CXX_EXTENSIONS OFF)
-else()
-    message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
-endif()
 
 INCLUDE(${NV_CMAKE_DIR}/OptimalOptions.cmake)
 
@@ -28,11 +18,48 @@ ADD_SUBDIRECTORY(extern)
 
 ADD_SUBDIRECTORY(src)
 
+INSTALL(
+	TARGETS nvtt bc6h nvmath nvthread nvimage nvcore bc7 nvsquish rg_etc1 posh
+  	EXPORT
+		nvtt-targets
+	RUNTIME
+		DESTINATION bin
+    LIBRARY
+		DESTINATION lib
+    ARCHIVE
+		DESTINATION lib/static
+)
+
+install(
+	EXPORT
+		nvtt-targets
+	NAMESPACE nvtt::
+	DESTINATION
+		cmake
+)
+
 # These files should only be installed when creating packages.
-INSTALL(FILES 
+INSTALL(FILES
 	LICENSE
 	README.md
 	DESTINATION share/doc/nvtt)
+
+
+include(CMakePackageConfigHelpers)
+
+configure_package_config_file(
+	${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in
+  	${CMAKE_CURRENT_BINARY_DIR}/nvttConfig.cmake
+  	INSTALL_DESTINATION
+		cmake
+)
+
+install(
+	FILES
+   		${CMAKE_CURRENT_BINARY_DIR}/nvttConfig.cmake
+    DESTINATION
+		cmake
+)
 
 # Add packaging support
 INCLUDE(InstallRequiredSystemLibraries)
@@ -46,7 +73,7 @@ SET(CPACK_PACKAGE_VERSION_MAJOR "2")
 SET(CPACK_PACKAGE_VERSION_MINOR "1")
 SET(CPACK_PACKAGE_VERSION_PATCH "2")
 SET(CPACK_PACKAGE_VERSION "2.1.2")
-SET(CPACK_PACKAGE_CONTACT "Ignacio Castaño <castano@gmail.com>")
+SET(CPACK_PACKAGE_CONTACT "Ignacio Castaï¿½o <castano@gmail.com>")
 SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Texture processing tools with support for Direct3D 10 and 11 formats.")
 
 SET(CPACK_PACKAGE_DESCRIPTION_FILE "${NV_SOURCE_DIR}/README.md")
@@ -60,4 +87,3 @@ IF(WIN32)
 ENDIF(WIN32)
 
 INCLUDE(CPack)
-
